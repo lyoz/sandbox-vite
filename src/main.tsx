@@ -1,11 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-
-const App = () => <div>Hello, world.</div>;
+import DemoWithReduxSaga from "./DemoWithReduxSaga";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <DemoWithReduxSaga />
   </React.StrictMode>,
   document.getElementById("root")
 );
