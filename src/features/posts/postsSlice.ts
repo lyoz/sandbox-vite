@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 
 const initialState = [
@@ -9,8 +9,17 @@ const initialState = [
 const postsSlice = createSlice({
   name: "posts",
   initialState,
-  reducers: {},
+  reducers: {
+    postAdded: (
+      state,
+      action: PayloadAction<{ id: string; title: string; content: string }>
+    ) => {
+      state.push(action.payload);
+    },
+  },
 });
+
+export const { postAdded } = postsSlice.actions;
 
 export const selectPosts = (state: RootState) => state.posts;
 
