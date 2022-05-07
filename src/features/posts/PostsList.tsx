@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { selectPosts } from "./postsSlice";
 
 export const PostsList = () => {
@@ -7,6 +8,7 @@ export const PostsList = () => {
     <article key={post.id}>
       <h3>{post.title}</h3>
       <p>{post.content}</p>
+      <Link to={`/posts/${post.id}`}>View Post</Link>
     </article>
   ));
   return (

@@ -1,13 +1,14 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AddPostForm } from "./features/posts/AddPostForm";
 import { PostsList } from "./features/posts/PostsList";
+import { SinglePostPage } from "./features/SinglePostPage";
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route
-          path="/"
+          path=""
           element={
             <>
               <AddPostForm />
@@ -15,6 +16,7 @@ const App = () => {
             </>
           }
         />
+        <Route path="posts/:postId" element={<SinglePostPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
