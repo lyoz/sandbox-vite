@@ -1,10 +1,9 @@
-import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { RootState } from "../app/store";
+import { useAppSelector } from "../app/hooks";
 
 export const SinglePostPage = () => {
   const { postId } = useParams<{ postId: string }>();
-  const post = useSelector((state: RootState) =>
+  const post = useAppSelector((state) =>
     state.posts.find((post) => post.id === postId)
   );
   if (!post) {

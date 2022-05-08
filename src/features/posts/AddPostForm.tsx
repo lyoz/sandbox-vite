@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { nanoid } from "@reduxjs/toolkit";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../app/store";
 import { postAdded } from "./postsSlice";
+import { useAppDispatch } from "../../app/hooks";
 
 export const AddPostForm = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   return (
     <section>
       <h2>AddPostForm</h2>
