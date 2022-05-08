@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { nanoid } from "@reduxjs/toolkit";
 import { postAdded } from "./postsSlice";
 import { useAppDispatch } from "../../app/hooks";
 
@@ -8,7 +7,7 @@ export const AddPostForm = () => {
   const [content, setContent] = useState("");
   const dispatch = useAppDispatch();
   const onSave = () => {
-    dispatch(postAdded({ id: nanoid(), title, content }));
+    dispatch(postAdded(title, content));
   };
   return (
     <section>
