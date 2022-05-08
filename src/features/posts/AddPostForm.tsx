@@ -25,7 +25,6 @@ export const AddPostForm = () => {
         <button
           type="button"
           onClick={() => {
-            console.log("onClick");
             dispatch(postAdded({ id: nanoid(), title, content }));
           }}
         >
