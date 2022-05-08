@@ -1,5 +1,4 @@
 import { createSlice, nanoid, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../../app/store";
 
 const initialState = [
   { id: "1", title: "First Post!", content: "Hello!" },
@@ -33,7 +32,5 @@ const postsSlice = createSlice({
 });
 
 export const { postAdded, postUpdated } = postsSlice.actions;
-
-export const selectPosts = (state: RootState) => state.posts;
 
 export default postsSlice.reducer;
