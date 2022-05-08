@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { postAdded } from "./postsSlice";
-import { useAppDispatch } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
 export const AddPostForm = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [userId, setUserId] = useState("");
   const dispatch = useAppDispatch();
+  const users = useAppSelector((state) => state.users);
   const onSave = () => {
-    dispatch(postAdded(title, content));
+    if (title && content) {
+      dispatch(postAdded(title, content, userId));
+    }
   };
   return (
     <section>
@@ -18,13 +22,28 @@ export const AddPostForm = () => {
           <input value={title} onChange={(e) => setTitle(e.target.value)} />
         </label>
         <label>
+          Author:
+          <select value={userId} onChange={(e) => setUserId(e.target.value)}>
+            <option value=""></option>
+            {users.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
           Content:
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
         </label>
-        <button type="button" onClick={onSave}>
+        <button
+          type="button"
+          onClick={onSave}
+          disabled={!(title && content && userId)}
+        >
           Save Post
         </button>
       </form>

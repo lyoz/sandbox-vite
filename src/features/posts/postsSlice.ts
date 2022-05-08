@@ -1,8 +1,8 @@
 import { createSlice, nanoid, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState = [
-  { id: "1", title: "First Post!", content: "Hello!" },
-  { id: "2", title: "Second Post", content: "More text" },
+  { id: "1", title: "First Post!", content: "Hello!", userId: "0" },
+  { id: "2", title: "Second Post", content: "More text", userId: "2" },
 ];
 
 const postsSlice = createSlice({
@@ -10,19 +10,16 @@ const postsSlice = createSlice({
   initialState,
   reducers: {
     postAdded: {
-      reducer: (
-        state,
-        action: PayloadAction<{ id: string; title: string; content: string }>
-      ) => {
+      reducer: (state, action: PayloadAction<typeof initialState[number]>) => {
         state.push(action.payload);
       },
-      prepare: (title: string, content: string) => ({
-        payload: { id: nanoid(), title, content },
+      prepare: (title: string, content: string, userId: string) => ({
+        payload: { id: nanoid(), title, content, userId },
       }),
     },
     postUpdated: (
       state,
-      action: PayloadAction<{ id: string; title: string; content: string }>
+      action: PayloadAction<typeof initialState[number]>
     ) => {
       const { id, title, content } = action.payload;
       const post = state.find((p) => p.id === id);
