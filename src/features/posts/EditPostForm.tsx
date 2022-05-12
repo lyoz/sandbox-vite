@@ -18,7 +18,14 @@ export const EditPostForm = () => {
   }
   const onSave = () => {
     if (title && content) {
-      dispatch(postUpdated({ id: postId, title, content }));
+      dispatch(
+        postUpdated({
+          id: postId,
+          title,
+          content,
+          date: new Date().toISOString(),
+        })
+      );
       navigate(`/posts/${postId}`);
     }
   };
