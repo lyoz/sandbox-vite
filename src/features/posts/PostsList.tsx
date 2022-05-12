@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { PostAuthor } from "./PostAuthor";
+import { ReactionButtons } from "./ReactionButtons";
 import { TimeAgo } from "./TimeAgo";
 
 export const PostsList = () => {
@@ -14,6 +15,7 @@ export const PostsList = () => {
       <PostAuthor userId={post.userId} />
       <TimeAgo timestamp={post.date} />
       <p>{post.content}</p>
+      <ReactionButtons post={post} />
       <Link to={`/posts/${post.id}`}>View Post</Link>
     </article>
   ));
