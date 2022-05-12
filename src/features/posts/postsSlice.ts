@@ -18,12 +18,14 @@ const initialState = [
   },
 ];
 
+export type Post = typeof initialState[number];
+
 const postsSlice = createSlice({
   name: "posts",
   initialState,
   reducers: {
     postAdded: {
-      reducer: (state, action: PayloadAction<typeof initialState[number]>) => {
+      reducer: (state, action: PayloadAction<Post>) => {
         state.push(action.payload);
       },
       prepare: (title: string, content: string, userId: string) => ({
@@ -36,10 +38,7 @@ const postsSlice = createSlice({
         },
       }),
     },
-    postUpdated: (
-      state,
-      action: PayloadAction<Partial<typeof initialState[number]>>
-    ) => {
+    postUpdated: (state, action: PayloadAction<Partial<Post>>) => {
       const { id, title, content, date } = action.payload;
       const post = state.find((p) => p.id === id);
       if (post) Object.assign(post, { title, content, date });
