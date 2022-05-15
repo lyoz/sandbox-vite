@@ -4,11 +4,17 @@ import { Provider } from "react-redux";
 import { store } from "./app/store";
 import App from "./App";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </React.StrictMode>,
-  document.getElementById("root")
-);
+(async () => {
+  if (process.env.NODE_ENV === "development") {
+    const { worker } = await import("./mocks/browser");
+    await worker.start();
+  }
+  ReactDOM.render(
+    <React.StrictMode>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </React.StrictMode>,
+    document.getElementById("root")
+  );
+})();
