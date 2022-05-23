@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { PostAuthor } from "./PostAuthor";
+import { selectAllPosts } from "./postsSlice";
 import { ReactionButtons } from "./ReactionButtons";
 import { TimeAgo } from "./TimeAgo";
 
 export const PostsList = () => {
-  const posts = useAppSelector((state) => state.posts);
+  const posts = useAppSelector(selectAllPosts);
   const orderedPosts = [...posts].sort(({ date: a }, { date: b }) =>
     b.localeCompare(a)
   );
