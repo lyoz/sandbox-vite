@@ -1,5 +1,4 @@
 import { createSlice, nanoid, PayloadAction } from "@reduxjs/toolkit";
-import { sub } from "date-fns";
 import { RootState } from "../../app/store";
 
 const generateInitialReactions = () => {
@@ -14,26 +13,20 @@ const generateInitialReactions = () => {
 
 export type ReactionKey = keyof ReturnType<typeof generateInitialReactions>;
 
-const initialState = [
-  {
-    id: "1",
-    title: "First Post!",
-    content: "Hello!",
-    userId: "0",
-    date: sub(new Date(), { minutes: 10 }).toISOString(),
-    reactions: generateInitialReactions(),
-  },
-  {
-    id: "2",
-    title: "Second Post",
-    content: "More text",
-    userId: "2",
-    date: sub(new Date(), { minutes: 5 }).toISOString(),
-    reactions: generateInitialReactions(),
-  },
-];
+export type Post = {
+  id: string;
+  title: string;
+  content: string;
+  userId: string;
+  date: string;
+  reactions: ReturnType<typeof generateInitialReactions>;
+};
 
-export type Post = typeof initialState[number];
+const initialState = {
+  posts: [] as Post[],
+  status: "idle",
+  error: null,
+};
 
 const postsSlice = createSlice({
   name: "posts",
@@ -41,7 +34,7 @@ const postsSlice = createSlice({
   reducers: {
     postAdded: {
       reducer: (state, action: PayloadAction<Post>) => {
-        state.push(action.payload);
+        state.posts.push(action.payload);
       },
       prepare: (title: string, content: string, userId: string) => ({
         payload: {
@@ -56,7 +49,7 @@ const postsSlice = createSlice({
     },
     postUpdated: (state, action: PayloadAction<Partial<Post>>) => {
       const { id, title, content, date } = action.payload;
-      const post = state.find((p) => p.id === id);
+      const post = state.posts.find((p) => p.id === id);
       if (post) Object.assign(post, { title, content, date });
     },
     reactionAdded: (
@@ -64,7 +57,7 @@ const postsSlice = createSlice({
       action: PayloadAction<{ postId: string; reaction: ReactionKey }>
     ) => {
       const { postId, reaction } = action.payload;
-      const post = state.find((p) => p.id === postId);
+      const post = state.posts.find((p) => p.id === postId);
       if (post) post.reactions[reaction]++;
     },
   },
@@ -74,6 +67,6 @@ export const { postAdded, postUpdated, reactionAdded } = postsSlice.actions;
 
 export default postsSlice.reducer;
 
-export const selectAllPosts = (state: RootState) => state.posts;
+export const selectAllPosts = (state: RootState) => state.posts.posts;
 export const selectPostById = (state: RootState, postId: string) =>
-  state.posts.find((post) => post.id === postId);
+  state.posts.posts.find((post) => post.id === postId);
