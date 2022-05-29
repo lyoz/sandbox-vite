@@ -1,5 +1,11 @@
-import { createSlice, nanoid, PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  nanoid,
+  PayloadAction,
+} from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
+import { client } from "../../client";
 
 const generateInitialReactions = () => ({
   thumbsUp: 0,
@@ -20,11 +26,20 @@ export type Post = {
   reactions: ReturnType<typeof generateInitialReactions>;
 };
 
-const initialState = {
-  posts: [] as Post[],
+const initialState: {
+  posts: Post[];
+  status: "idle" | "loading" | "succeeded" | "failed";
+  error: unknown;
+} = {
+  posts: [],
   status: "idle",
   error: null,
 };
+
+export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
+  const res = await client.get("/fakeApi/posts");
+  return res.data as Post[];
+});
 
 const postsSlice = createSlice({
   name: "posts",
@@ -58,6 +73,20 @@ const postsSlice = createSlice({
       const post = state.posts.find((p) => p.id === postId);
       if (post) post.reactions[reaction]++;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchPosts.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchPosts.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.posts = [...state.posts, ...action.payload];
+      })
+      .addCase(fetchPosts.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      });
   },
 });
 
