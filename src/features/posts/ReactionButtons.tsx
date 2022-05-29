@@ -1,13 +1,13 @@
 import { useAppDispatch } from "../../app/hooks";
 import { Post, reactionAdded, ReactionKey } from "./postsSlice";
 
-export const reactionEmoji = {
-  "+1": "👍",
-  "-1": "👎",
+export const reactionEmoji: Record<ReactionKey, string> = {
+  thumbsUp: "👍",
   hooray: "🎉",
+  heart: "❤",
   rocket: "🚀",
   eyes: "👀",
-} as const;
+};
 
 export const ReactionButtons = ({ post }: { post: Post }) => {
   const dispatch = useAppDispatch();

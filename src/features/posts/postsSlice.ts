@@ -1,15 +1,13 @@
 import { createSlice, nanoid, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 
-const generateInitialReactions = () => {
-  return {
-    "+1": 0,
-    "-1": 0,
-    hooray: 0,
-    rocket: 0,
-    eyes: 0,
-  };
-};
+const generateInitialReactions = () => ({
+  thumbsUp: 0,
+  hooray: 0,
+  heart: 0,
+  rocket: 0,
+  eyes: 0,
+});
 
 export type ReactionKey = keyof ReturnType<typeof generateInitialReactions>;
 
