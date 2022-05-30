@@ -6,10 +6,10 @@ const initialState = [
   { id: "2", name: "Madison Price" },
 ];
 
-const postsSlice = createSlice({
+const usersSlice = createSlice({
   name: "users",
   initialState,
   reducers: {},
 });
 
-export default postsSlice.reducer;
+export default usersSlice.reducer;
