@@ -124,7 +124,7 @@ for (let i = 0; i < NUM_USERS; i++) {
 
 const serializePost = (post) => ({
   ...post,
-  user: post.user.id,
+  userId: post.user.id,
 });
 
 /* MSW REST API Handlers */
