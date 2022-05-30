@@ -29,11 +29,11 @@ export type Post = {
 const initialState: {
   posts: Post[];
   status: "idle" | "loading" | "succeeded" | "failed";
-  error: unknown;
+  error?: string;
 } = {
   posts: [],
   status: "idle",
-  error: null,
+  error: undefined,
 };
 
 export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {

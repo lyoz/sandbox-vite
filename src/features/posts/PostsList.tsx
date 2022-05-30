@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { PostAuthor } from "./PostAuthor";
@@ -24,6 +24,7 @@ export const PostsList = () => {
   const posts = useAppSelector(selectAllPosts);
 
   const postStatus = useAppSelector((state) => state.posts.status);
+  const error = useAppSelector((state) => state.posts.error);
 
   useEffect(() => {
     if (postStatus === "idle") {
@@ -31,16 +32,18 @@ export const PostsList = () => {
     }
   }, [dispatch, postStatus]);
 
-  let content;
+  let content: ReactNode;
   if (postStatus === "loading") {
     content = <div>loading...</div>;
-  } else {
+  } else if (postStatus === "succeeded") {
     const orderedPosts = [...posts].sort(({ date: a }, { date: b }) =>
       b.localeCompare(a)
     );
     content = orderedPosts.map((post) => (
       <PostExcerpt key={post.id} post={post} />
     ));
+  } else if (postStatus === "failed") {
+    content = <div>{error}</div>;
   }
 
   return (
