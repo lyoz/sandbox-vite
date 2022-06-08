@@ -3,19 +3,24 @@ const request = async (
   method: "GET" | "POST",
   body?: object
 ) => {
-  let data;
   try {
     const res = await fetch(endpoint, {
       method,
+      headers: { "Content-Type": "application/json" },
       body: body && JSON.stringify(body),
     });
-    data = await res.json();
-    return {
-      status: res.status,
-      data,
-    };
+    if (res.ok) {
+      const data = await res.json();
+      return {
+        status: res.status,
+        data,
+        headers: res.headers,
+        url: res.url,
+      };
+    }
+    throw new Error(res.statusText);
   } catch (err) {
-    return Promise.reject(err);
+    return Promise.reject(err instanceof Error ? err.message : err);
   }
 };
 
