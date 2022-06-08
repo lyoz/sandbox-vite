@@ -135,9 +135,8 @@ export const handlers = [
     return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(posts));
   }),
   rest.post("/fakeApi/posts", function (req, res, ctx) {
-    const data = req.body;
-
-    if (data.content === "error") {
+    const { body } = req;
+    if (body.content === "error") {
       return res(
         ctx.delay(ARTIFICIAL_DELAY_MS),
         ctx.status(500),
@@ -145,10 +144,9 @@ export const handlers = [
       );
     }
 
+    const data = { title: body.title, content: body.content };
     data.date = new Date().toISOString();
-
-    const user = db.user.findFirst({ where: { id: { equals: data.user } } });
-    data.user = user;
+    data.user = db.user.findFirst({ where: { id: { equals: body.userId } } });
     data.reactions = db.reaction.create();
 
     const post = db.post.create(data);
