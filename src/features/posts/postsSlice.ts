@@ -41,6 +41,14 @@ export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
   return res.data as Post[];
 });
 
+export const addNewPost = createAsyncThunk(
+  "posts/addNewPost",
+  async (initialPost: { title: string; content: string; userId: string }) => {
+    const res = await client.post("fakeApi/posts", initialPost);
+    return res.data as Post;
+  }
+);
+
 const postsSlice = createSlice({
   name: "posts",
   initialState,
@@ -86,6 +94,9 @@ const postsSlice = createSlice({
       .addCase(fetchPosts.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
+      })
+      .addCase(addNewPost.fulfilled, (state, action) => {
+        state.posts.push(action.payload);
       });
   },
 });
