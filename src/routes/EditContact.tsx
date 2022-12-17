@@ -4,6 +4,7 @@ import {
   LoaderFunctionArgs,
   redirect,
   useLoaderData,
+  useNavigate,
 } from "react-router-dom";
 import { getContact, updateContact } from "../contacts";
 
@@ -24,6 +25,8 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
 export const EditContact = () => {
   const contact = useLoaderData() as LoaderData;
+  const navigate = useNavigate();
+
   if (contact == null) return null;
 
   return (
@@ -70,7 +73,14 @@ export const EditContact = () => {
       </label>
       <p>
         <button type="submit">Save</button>
-        <button type="button">Cancel</button>
+        <button
+          type="button"
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          Cancel
+        </button>
       </p>
     </Form>
   );
