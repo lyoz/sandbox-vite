@@ -10,6 +10,7 @@ import {
   EditContact,
   loader as editContactLoader,
 } from "./routes/EditContact";
+import { Index } from "./routes/Index";
 import {
   action as rootAction,
   loader as rootLoader,
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
     loader: rootLoader,
     action: rootAction,
     children: [
+      {
+        index: true,
+        element: <Index />,
+      },
       {
         path: "contacts/:contactId",
         element: <ContactDetail />,
