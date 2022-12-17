@@ -4,6 +4,7 @@ import {
   ContactDetail,
   loader as contactDetailLoader,
 } from "./routes/ContactDetail";
+import { action as destroyContactAction } from "./routes/DestroyContact";
 import {
   action as editContactAction,
   EditContact,
@@ -33,6 +34,11 @@ const router = createBrowserRouter([
         element: <EditContact />,
         loader: editContactLoader,
         action: editContactAction,
+      },
+      {
+        path: "contacts/:contactId/destroy",
+        errorElement: <div>Oops! There was an error.</div>,
+        action: destroyContactAction,
       },
     ],
   },
