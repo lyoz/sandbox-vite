@@ -1,17 +1,17 @@
-import { Form } from "react-router-dom";
-import { Contact } from "../contacts";
+import { Form, LoaderFunctionArgs, useLoaderData } from "react-router-dom";
+import { Contact, getContact } from "../contacts";
+
+export const loader = async ({ params }: LoaderFunctionArgs) => {
+  if (params.contactId == null) return null;
+  return getContact(params.contactId);
+};
+
+type LoaderData = Awaited<ReturnType<typeof loader>>;
 
 export const ContactDetail = () => {
-  const contact = {
-    id: "X",
-    createdAt: 42,
-    first: "Your",
-    last: "Name",
-    avatar: "https://placekitten.com/g/200/200",
-    twitter: "your_handle",
-    notes: "Some notes",
-    favorite: true,
-  } satisfies Contact;
+  const contact = useLoaderData() as LoaderData;
+
+  if (contact == null) return null;
 
   return (
     <div id="contact">
