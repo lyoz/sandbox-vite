@@ -82,7 +82,11 @@ export const ContactDetail = () => {
 
 function Favorite({ contact }: { contact: Contact }) {
   const fetcher = useFetcher();
-  const favorite = contact.favorite;
+
+  let favorite = contact.favorite;
+  if (fetcher.formData) {
+    favorite = fetcher.formData.get("favorite") === "true";
+  }
 
   return (
     <fetcher.Form method="post">
