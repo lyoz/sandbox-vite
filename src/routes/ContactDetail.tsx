@@ -1,5 +1,11 @@
-import { Form, LoaderFunctionArgs, useLoaderData } from "react-router-dom";
-import { Contact, getContact } from "../contacts";
+import {
+  ActionFunctionArgs,
+  Form,
+  LoaderFunctionArgs,
+  useFetcher,
+  useLoaderData,
+} from "react-router-dom";
+import { Contact, getContact, updateContact } from "../contacts";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   if (params.contactId == null) return null;
@@ -7,6 +13,14 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 };
 
 type LoaderData = Awaited<ReturnType<typeof loader>>;
+
+export const action = async ({ request, params }: ActionFunctionArgs) => {
+  if (params.contactId == null) return null;
+  const formData = await request.formData();
+  return updateContact(params.contactId, {
+    favorite: formData.get("favorite") === "true",
+  });
+};
 
 export const ContactDetail = () => {
   const contact = useLoaderData() as LoaderData;
@@ -67,10 +81,11 @@ export const ContactDetail = () => {
 };
 
 function Favorite({ contact }: { contact: Contact }) {
+  const fetcher = useFetcher();
   const favorite = contact.favorite;
 
   return (
-    <Form method="post">
+    <fetcher.Form method="post">
       <button
         name="favorite"
         value={favorite ? "false" : "true"}
@@ -78,6 +93,6 @@ function Favorite({ contact }: { contact: Contact }) {
       >
         {favorite ? "★" : "☆"}
       </button>
-    </Form>
+    </fetcher.Form>
   );
 }
