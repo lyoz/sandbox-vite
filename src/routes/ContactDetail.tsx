@@ -8,8 +8,14 @@ import {
 import { Contact, getContact, updateContact } from "../contacts";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  if (params.contactId == null) return null;
-  return getContact(params.contactId);
+  if (params.contactId == null) {
+    throw new Response("", { status: 404, statusText: "Not Found" });
+  }
+  const contact = await getContact(params.contactId);
+  if (contact == null) {
+    throw new Response("", { status: 404, statusText: "Not Found" });
+  }
+  return contact;
 };
 
 type LoaderData = Awaited<ReturnType<typeof loader>>;
@@ -24,8 +30,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
 export const ContactDetail = () => {
   const contact = useLoaderData() as LoaderData;
-
-  if (contact == null) return null;
 
   return (
     <div id="contact">
