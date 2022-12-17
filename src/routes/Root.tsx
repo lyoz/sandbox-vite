@@ -1,16 +1,21 @@
+import { useEffect, useState } from "react";
 import {
   Form,
+  LoaderFunctionArgs,
   NavLink,
   Outlet,
   redirect,
   useLoaderData,
   useNavigation,
+  useSubmit,
 } from "react-router-dom";
 import { createContact, getContacts } from "../contacts";
 
-export const loader = async () => {
-  const contacts = await getContacts();
-  return { contacts };
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const url = new URL(request.url);
+  const q = url.searchParams.get("q");
+  const contacts = await getContacts(q ?? undefined);
+  return { contacts, q };
 };
 
 type LoaderData = Awaited<ReturnType<typeof loader>>;
@@ -21,25 +26,42 @@ export const action = async () => {
 };
 
 export const Root = () => {
-  const { contacts } = useLoaderData() as LoaderData;
+  const { contacts, q } = useLoaderData() as LoaderData;
+  const [query, setQuery] = useState(q);
   const navigation = useNavigation();
+  const submit = useSubmit();
+
+  useEffect(() => {
+    setQuery(q);
+  }, [q]);
+
+  const searching =
+    navigation.location != null &&
+    new URLSearchParams(navigation.location.search).has("q");
 
   return (
     <>
       <div id="sidebar">
         <h1>React Router Contacts</h1>
         <div>
-          <form id="search-form" role="search">
+          <Form id="search-form" role="search">
             <input
               id="q"
+              className={searching ? "loading" : ""}
               aria-label="Search contacts"
               placeholder="Search"
               type="search"
               name="q"
+              value={query ?? ""}
+              onChange={(e) => {
+                setQuery(e.currentTarget.value);
+                const isFirstSearch = q == null;
+                submit(e.currentTarget.form, { replace: !isFirstSearch });
+              }}
             />
-            <div id="search-spinner" aria-hidden hidden={true} />
+            <div id="search-spinner" aria-hidden hidden={!searching} />
             <div className="sr-only" aria-live="polite"></div>
-          </form>
+          </Form>
           <Form method="post">
             <button type="submit">New</button>
           </Form>
