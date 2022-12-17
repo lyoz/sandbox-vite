@@ -1,14 +1,11 @@
-import { useState } from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Root } from "./routes/Root";
 
-export const App = () => {
-  const [count, setCount] = useState(0);
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Root />,
+  },
+]);
 
-  return (
-    <>
-      <p>Hello, Vite + React + TypeScript!</p>
-      <button onClick={() => setCount((count) => count + 1)}>
-        count is {count}
-      </button>
-    </>
-  );
-};
+export const App = () => <RouterProvider router={router} />;
