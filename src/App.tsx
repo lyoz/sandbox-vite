@@ -1,5 +1,6 @@
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Navbar } from "./app/Navbar";
+import { AddPostForm } from "./features/posts/AddPostForm";
 import { PostsList } from "./features/posts/PostsList";
 
 const Layout = () => (
@@ -16,7 +17,12 @@ const router = createBrowserRouter([
 		children: [
 			{
 				index: true,
-				element: <PostsList />,
+				element: (
+					<>
+						<AddPostForm />
+						<PostsList />
+					</>
+				),
 			},
 		],
 	},
