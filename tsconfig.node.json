@@ -1,9 +1,14 @@
 {
-  "compilerOptions": {
-    "composite": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "allowSyntheticDefaultImports": true
-  },
-  "include": ["vite.config.ts"]
+	"compilerOptions": {
+		// Projects
+		"composite": true,
+		// Modules
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		// Interop Constraints
+		"allowSyntheticDefaultImports": true,
+		// Completeness
+		"skipLibCheck": true
+	},
+	"include": ["vite.config.ts"]
 }
