@@ -1,14 +1,18 @@
-import { useState } from "react";
+import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Navbar } from "./app/Navbar";
 
-export const App = () => {
-	const [count, setCount] = useState(0);
+const Layout = () => (
+	<>
+		<Navbar />
+		<Outlet />
+	</>
+);
 
-	return (
-		<div>
-			<p>Hello, Vite + React + TypeScript!</p>
-			<button onClick={() => setCount((count) => count + 1)}>
-				count is {count}
-			</button>
-		</div>
-	);
-};
+const router = createBrowserRouter([
+	{
+		path: "/",
+		element: <Layout />,
+	},
+]);
+
+export const App = () => <RouterProvider router={router} />;
