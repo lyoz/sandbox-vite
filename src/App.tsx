@@ -1,5 +1,6 @@
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Navbar } from "./app/Navbar";
+import { PostsList } from "./features/posts/PostsList";
 
 const Layout = () => (
 	<>
@@ -12,6 +13,12 @@ const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <Layout />,
+		children: [
+			{
+				index: true,
+				element: <PostsList />,
+			},
+		],
 	},
 ]);
 
