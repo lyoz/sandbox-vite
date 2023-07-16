@@ -2,6 +2,7 @@ import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Navbar } from "./app/Navbar";
 import { AddPostForm } from "./features/posts/AddPostForm";
 import { PostsList } from "./features/posts/PostsList";
+import { SinglePostPage } from "./features/posts/SinglePostPage";
 
 const Layout = () => (
 	<>
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
 						<PostsList />
 					</>
 				),
+			},
+			{
+				path: "posts/:postId",
+				element: <SinglePostPage />,
 			},
 		],
 	},

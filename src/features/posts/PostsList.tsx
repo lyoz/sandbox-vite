@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 
 export const PostsList = () => {
@@ -10,6 +11,7 @@ export const PostsList = () => {
 				<article key={post.id}>
 					<h3>{post.title}</h3>
 					<p>{post.content.substring(0, 100)}</p>
+					<Link to={`/posts/${post.id}`}>View Post</Link>
 				</article>
 			))}
 		</section>
