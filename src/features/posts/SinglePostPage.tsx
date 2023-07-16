@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { assertIsDefined } from "../../common/assertIsDefined";
+import { PostAuthor } from "./PostAuthor";
 
 export const SinglePostPage = () => {
 	const posts = useAppSelector((state) => state.posts);
@@ -21,6 +22,7 @@ export const SinglePostPage = () => {
 		<section>
 			<article>
 				<h2>{post.title}</h2>
+				<PostAuthor userId={post.userId} />
 				<p>{post.content}</p>
 				<Link to={`/editPost/${post.id}`}>Edit Post</Link>
 			</article>

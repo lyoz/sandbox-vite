@@ -1,11 +1,13 @@
 import { ChangeEvent, useState } from "react";
-import { useAppDispatch } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { postAdded } from "./postsSlice";
 
 export const AddPostForm = () => {
 	const dispatch = useAppDispatch();
+	const users = useAppSelector((state) => state.users);
 	const [title, setTitle] = useState("");
 	const [content, setContent] = useState("");
+	const [userId, setUserId] = useState("");
 
 	const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) =>
 		setTitle(e.currentTarget.value);
@@ -13,11 +15,14 @@ export const AddPostForm = () => {
 	const handleContentChange = (e: ChangeEvent<HTMLTextAreaElement>) =>
 		setContent(e.currentTarget.value);
 
-	const canSave = title !== "" && content !== "";
+	const handleAuthorChange = (e: ChangeEvent<HTMLSelectElement>) =>
+		setUserId(e.currentTarget.value);
+
+	const canSave = title !== "" && content !== "" && userId !== "";
 
 	const handleSave = () => {
 		if (canSave) {
-			dispatch(postAdded(title, content));
+			dispatch(postAdded(title, content, userId));
 			setTitle("");
 			setContent("");
 		}
@@ -30,6 +35,17 @@ export const AddPostForm = () => {
 				<label>
 					Post Title:
 					<input value={title} onChange={handleTitleChange} />
+				</label>
+				<label>
+					Author:
+					<select value={userId} onChange={handleAuthorChange}>
+						<option value="" />
+						{users.map((user) => (
+							<option key={user.id} value={user.id}>
+								{user.name}
+							</option>
+						))}
+					</select>
 				</label>
 				<label>
 					Content:

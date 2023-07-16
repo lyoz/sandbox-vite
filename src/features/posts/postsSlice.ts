@@ -4,13 +4,14 @@ export type Post = {
 	id: string;
 	title: string;
 	content: string;
+	userId: string;
 };
 
 type PostsState = Post[];
 
 const initialState = [
-	{ id: "1", title: "First Post!", content: "Hello!" },
-	{ id: "2", title: "Second Post", content: "More text" },
+	{ id: "1", title: "First Post!", content: "Hello!", userId: "0" },
+	{ id: "2", title: "Second Post", content: "More text", userId: "2" },
 ] satisfies PostsState;
 
 const postsSlice = createSlice({
@@ -21,11 +22,11 @@ const postsSlice = createSlice({
 			reducer: (state, action: PayloadAction<Post>) => {
 				state.push(action.payload);
 			},
-			prepare: (title: string, content: string) => ({
-				payload: { id: nanoid(), title, content },
+			prepare: (title: string, content: string, userId: string) => ({
+				payload: { id: nanoid(), title, content, userId },
 			}),
 		},
-		postUpdated: (state, action: PayloadAction<Post>) => {
+		postUpdated: (state, action: PayloadAction<Omit<Post, "userId">>) => {
 			const { id, title, content } = action.payload;
 			const existingPost = state.find((post) => post.id === id);
 			if (existingPost != null) {
