@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { assertIsDefined } from "../../common/assertIsDefined";
 import { PostAuthor } from "./PostAuthor";
+import { ReactionButtons } from "./ReactionButtons";
 import { TimeAgo } from "./TimeAgo";
 
 export const SinglePostPage = () => {
@@ -28,6 +29,7 @@ export const SinglePostPage = () => {
 					<TimeAgo createdAt={post.createdAt} />
 				</div>
 				<p>{post.content}</p>
+				<ReactionButtons post={post} />
 				<Link to={`/editPost/${post.id}`}>Edit Post</Link>
 			</article>
 		</section>
