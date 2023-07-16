@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { PostAuthor } from "./PostAuthor";
+import { TimeAgo } from "./TimeAgo";
 
 export const PostsList = () => {
 	const posts = useAppSelector((state) => state.posts);
@@ -11,7 +12,10 @@ export const PostsList = () => {
 			{posts.map((post) => (
 				<article key={post.id}>
 					<h3>{post.title}</h3>
-					<PostAuthor userId={post.userId} />
+					<div style={{ display: "flex", columnGap: 8 }}>
+						<PostAuthor userId={post.userId} />
+						<TimeAgo createdAt={post.createdAt} />
+					</div>
 					<p>{post.content.substring(0, 100)}</p>
 					<Link to={`/posts/${post.id}`}>View Post</Link>
 				</article>
