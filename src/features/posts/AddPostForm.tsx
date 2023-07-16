@@ -1,4 +1,3 @@
-import { nanoid } from "@reduxjs/toolkit";
 import { ChangeEvent, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import { postAdded } from "./postsSlice";
@@ -18,7 +17,7 @@ export const AddPostForm = () => {
 
 	const handleSave = () => {
 		if (canSave) {
-			dispatch(postAdded({ id: nanoid(), title, content }));
+			dispatch(postAdded(title, content));
 			setTitle("");
 			setContent("");
 		}
