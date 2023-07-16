@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-type Post = {
+export type Post = {
 	id: string;
 	title: string;
 	content: string;
