@@ -6,10 +6,14 @@ import { TimeAgo } from "./TimeAgo";
 export const PostsList = () => {
 	const posts = useAppSelector((state) => state.posts);
 
+	const orderedPosts = [...posts].sort((a, b) =>
+		b.createdAt.localeCompare(a.createdAt),
+	);
+
 	return (
 		<section>
 			<h2>Posts</h2>
-			{posts.map((post) => (
+			{orderedPosts.map((post) => (
 				<article key={post.id}>
 					<h3>{post.title}</h3>
 					<div style={{ display: "flex", columnGap: 8 }}>
