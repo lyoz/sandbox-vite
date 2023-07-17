@@ -1,4 +1,11 @@
-import { PayloadAction, createSlice, nanoid } from "@reduxjs/toolkit";
+import {
+	PayloadAction,
+	createAsyncThunk,
+	createSlice,
+	nanoid,
+} from "@reduxjs/toolkit";
+import { RootState } from "../../app/store";
+import { client } from "../../common/client";
 
 export const reactionKeys = [
 	"thumbsUp",
@@ -30,6 +37,20 @@ const initialState: PostsState = {
 	status: "idle",
 	error: null,
 };
+
+export const fetchPosts = createAsyncThunk<Post[], void, { state: RootState }>(
+	"posts/fetchPosts",
+	async () => {
+		const response = await client.get("/fakeApi/posts");
+		return response.data;
+	},
+	{
+		condition: (_, { getState }) => {
+			const { posts } = getState();
+			return posts.status !== "loading";
+		},
+	},
+);
 
 const postsSlice = createSlice({
 	name: "posts",
@@ -79,6 +100,20 @@ const postsSlice = createSlice({
 				existingPost.reactionCounts[reactionKey]++;
 			}
 		},
+	},
+	extraReducers: (builder) => {
+		builder
+			.addCase(fetchPosts.pending, (state) => {
+				state.status = "loading";
+			})
+			.addCase(fetchPosts.fulfilled, (state, action) => {
+				state.status = "succeeded";
+				state.posts = [...state.posts, ...action.payload];
+			})
+			.addCase(fetchPosts.rejected, (state, action) => {
+				state.status = "failed";
+				state.error = action.error.message ?? "Unexpected error";
+			});
 	},
 });
 
