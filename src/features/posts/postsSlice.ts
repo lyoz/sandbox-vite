@@ -1,5 +1,4 @@
 import { PayloadAction, createSlice, nanoid } from "@reduxjs/toolkit";
-import { sub } from "date-fns";
 
 export const reactionKeys = [
 	"thumbsUp",
@@ -20,26 +19,17 @@ export type Post = {
 	createdAt: string;
 };
 
-type PostsState = Post[];
+type PostsState = {
+	posts: Post[];
+	status: "idle" | "loading" | "succeeded" | "failed";
+	error: string | null;
+};
 
-const initialState: PostsState = [
-	{
-		id: "1",
-		title: "First Post!",
-		content: "Hello!",
-		userId: "0",
-		reactionCounts: { thumbsUp: 0, hooray: 0, heart: 0, rocket: 0, eyes: 0 },
-		createdAt: sub(new Date(), { minutes: 10 }).toISOString(),
-	},
-	{
-		id: "2",
-		title: "Second Post",
-		content: "More text",
-		userId: "2",
-		reactionCounts: { thumbsUp: 0, hooray: 0, heart: 0, rocket: 0, eyes: 0 },
-		createdAt: sub(new Date(), { minutes: 5 }).toISOString(),
-	},
-];
+const initialState: PostsState = {
+	posts: [],
+	status: "idle",
+	error: null,
+};
 
 const postsSlice = createSlice({
 	name: "posts",
@@ -47,7 +37,7 @@ const postsSlice = createSlice({
 	reducers: {
 		postAdded: {
 			reducer: (state, action: PayloadAction<Post>) => {
-				state.push(action.payload);
+				state.posts.push(action.payload);
 			},
 			prepare: (title: string, content: string, userId: string) => ({
 				payload: {
@@ -73,7 +63,7 @@ const postsSlice = createSlice({
 			>,
 		) => {
 			const { id, title, content } = action.payload;
-			const existingPost = state.find((post) => post.id === id);
+			const existingPost = state.posts.find((post) => post.id === id);
 			if (existingPost != null) {
 				existingPost.title = title;
 				existingPost.content = content;
@@ -84,7 +74,7 @@ const postsSlice = createSlice({
 			action: PayloadAction<{ postId: string; reactionKey: ReactionKey }>,
 		) => {
 			const { postId, reactionKey } = action.payload;
-			const existingPost = state.find((post) => post.id === postId);
+			const existingPost = state.posts.find((post) => post.id === postId);
 			if (existingPost != null) {
 				existingPost.reactionCounts[reactionKey]++;
 			}

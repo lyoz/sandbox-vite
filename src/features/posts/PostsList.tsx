@@ -5,7 +5,7 @@ import { ReactionButtons } from "./ReactionButtons";
 import { TimeAgo } from "./TimeAgo";
 
 export const PostsList = () => {
-	const posts = useAppSelector((state) => state.posts);
+	const posts = useAppSelector((state) => state.posts.posts);
 
 	const orderedPosts = [...posts].sort((a, b) =>
 		b.createdAt.localeCompare(a.createdAt),

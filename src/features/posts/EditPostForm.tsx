@@ -46,7 +46,7 @@ const EditPostFormInner = ({ post }: { post: Post }) => {
 };
 
 export const EditPostForm = () => {
-	const posts = useAppSelector((state) => state.posts);
+	const posts = useAppSelector((state) => state.posts.posts);
 	const { postId } = useParams();
 	assertIsDefined(postId);
 

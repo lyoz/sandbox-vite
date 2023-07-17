@@ -6,7 +6,7 @@ import { ReactionButtons } from "./ReactionButtons";
 import { TimeAgo } from "./TimeAgo";
 
 export const SinglePostPage = () => {
-	const posts = useAppSelector((state) => state.posts);
+	const posts = useAppSelector((state) => state.posts.posts);
 	const { postId } = useParams();
 	assertIsDefined(postId);
 
