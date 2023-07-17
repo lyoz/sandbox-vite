@@ -1,9 +1,4 @@
-import {
-	PayloadAction,
-	createAsyncThunk,
-	createSlice,
-	nanoid,
-} from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import { client } from "../../common/client";
 
@@ -52,31 +47,19 @@ export const fetchPosts = createAsyncThunk<Post[], void, { state: RootState }>(
 	},
 );
 
+export const addNewPost = createAsyncThunk<
+	Post,
+	Omit<Post, "id" | "reactionCounts" | "createdAt">
+>("posts/addNewPost", async (post) => {
+	const body = JSON.stringify(post);
+	const response = await client.post("/fakeApi/posts", body);
+	return response.data;
+});
+
 const postsSlice = createSlice({
 	name: "posts",
 	initialState,
 	reducers: {
-		postAdded: {
-			reducer: (state, action: PayloadAction<Post>) => {
-				state.posts.push(action.payload);
-			},
-			prepare: (title: string, content: string, userId: string) => ({
-				payload: {
-					id: nanoid(),
-					title,
-					content,
-					userId,
-					reactionCounts: {
-						thumbsUp: 0,
-						hooray: 0,
-						heart: 0,
-						rocket: 0,
-						eyes: 0,
-					},
-					createdAt: new Date().toISOString(),
-				},
-			}),
-		},
 		postUpdated: (
 			state,
 			action: PayloadAction<
@@ -113,10 +96,13 @@ const postsSlice = createSlice({
 			.addCase(fetchPosts.rejected, (state, action) => {
 				state.status = "failed";
 				state.error = action.error.message ?? "Unexpected error";
+			})
+			.addCase(addNewPost.fulfilled, (state, action) => {
+				state.posts.push(action.payload);
 			});
 	},
 });
 
-export const { postAdded, postUpdated, reactionAdded } = postsSlice.actions;
+export const { postUpdated, reactionAdded } = postsSlice.actions;
 
 export const postsReducer = postsSlice.reducer;

@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { postAdded } from "./postsSlice";
+import { addNewPost } from "./postsSlice";
 
 export const AddPostForm = () => {
 	const dispatch = useAppDispatch();
@@ -8,6 +8,7 @@ export const AddPostForm = () => {
 	const [title, setTitle] = useState("");
 	const [content, setContent] = useState("");
 	const [userId, setUserId] = useState("");
+	const [addRequestStatus, setAddRequestStatus] = useState("idle");
 
 	const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) =>
 		setTitle(e.currentTarget.value);
@@ -18,13 +19,25 @@ export const AddPostForm = () => {
 	const handleAuthorChange = (e: ChangeEvent<HTMLSelectElement>) =>
 		setUserId(e.currentTarget.value);
 
-	const canSave = title !== "" && content !== "" && userId !== "";
+	const canSave =
+		title !== "" &&
+		content !== "" &&
+		userId !== "" &&
+		addRequestStatus === "idle";
 
-	const handleSave = () => {
+	const handleSave = async () => {
 		if (canSave) {
-			dispatch(postAdded(title, content, userId));
-			setTitle("");
-			setContent("");
+			try {
+				setAddRequestStatus("pending");
+				await dispatch(addNewPost({ title, content, userId })).unwrap();
+				setTitle("");
+				setContent("");
+				setUserId("");
+			} catch (err) {
+				console.error("Failed to save the post:", err);
+			} finally {
+				setAddRequestStatus("idle");
+			}
 		}
 	};
 
