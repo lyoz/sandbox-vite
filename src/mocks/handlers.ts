@@ -73,4 +73,17 @@ export const handlers = [
 			ctx.json(db.post.getAll().map(serializePost)),
 		);
 	}),
+	rest.post("/fakeApi/posts", async (req, res, ctx) => {
+		const json = await req.json();
+		const user = db.user.findFirst({ where: { id: { equals: json.userId } } });
+		if (user == null) return res(ctx.status(400));
+		const post = db.post.create({
+			title: json.title,
+			content: json.content,
+			user,
+			reactionCounts: db.reactionCounts.create(),
+			createdAt: new Date().toISOString(),
+		});
+		return res(ctx.delay(DELAY_MS), ctx.json(serializePost(post)));
+	}),
 ];
