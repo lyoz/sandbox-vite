@@ -22,7 +22,7 @@ export type Post = {
 
 type PostsState = Post[];
 
-const initialState = [
+const initialState: PostsState = [
 	{
 		id: "1",
 		title: "First Post!",
@@ -39,7 +39,7 @@ const initialState = [
 		reactionCounts: { thumbsUp: 0, hooray: 0, heart: 0, rocket: 0, eyes: 0 },
 		createdAt: sub(new Date(), { minutes: 5 }).toISOString(),
 	},
-] satisfies PostsState;
+];
 
 const postsSlice = createSlice({
 	name: "posts",

@@ -7,11 +7,11 @@ type User = {
 
 type UsersState = User[];
 
-const initialState = [
+const initialState: UsersState = [
 	{ id: "0", name: "Tianna Jenkins" },
 	{ id: "1", name: "Kevin Grant" },
 	{ id: "2", name: "Madison Price" },
-] satisfies UsersState;
+];
 
 const usersSlice = createSlice({
 	name: "users",
