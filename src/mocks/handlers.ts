@@ -7,11 +7,20 @@ import {
 	primaryKey,
 } from "@mswjs/data";
 import { nanoid } from "@reduxjs/toolkit";
+import { subMinutes } from "date-fns";
 import { rest } from "msw";
 
 const USERS = 3;
 const POSTS_PER_USERS = 3;
 const DELAY_MS = 1000;
+
+const getRandomInt = (min: number, max: number) => {
+	return min + Math.floor(Math.random() * (max - min + 1));
+};
+
+const randomFromArray = <T>(array: T[]) => {
+	return array[Math.floor(Math.random() * array.length)];
+};
 
 const db = factory({
 	user: {
@@ -85,5 +94,25 @@ export const handlers = [
 			createdAt: new Date().toISOString(),
 		});
 		return res(ctx.delay(DELAY_MS), ctx.json(serializePost(post)));
+	}),
+	rest.get("/fakeApi/notifications", (_, res, ctx) => {
+		const notificationTemplates = [
+			"poked you",
+			"says hi!",
+			"is glad we're friends",
+			"sent you a gift",
+		];
+		const users = db.user.getAll();
+		const notifcations = [...Array(getRandomInt(1, 5))].map(() => {
+			const now = new Date();
+			const past = subMinutes(now, 15);
+			return {
+				id: nanoid(),
+				message: randomFromArray(notificationTemplates),
+				userId: randomFromArray(users).id,
+				createdAt: faker.date.between({ from: past, to: now }),
+			};
+		});
+		return res(ctx.delay(DELAY_MS), ctx.json(notifcations));
 	}),
 ];
