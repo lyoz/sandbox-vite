@@ -4,6 +4,8 @@ import { AddPostForm } from "./features/posts/AddPostForm";
 import { EditPostForm } from "./features/posts/EditPostForm";
 import { PostsList } from "./features/posts/PostsList";
 import { SinglePostPage } from "./features/posts/SinglePostPage";
+import { UserPage } from "./features/users/UserPage";
+import { UsersList } from "./features/users/UsersList";
 
 const Layout = () => (
 	<>
@@ -33,6 +35,14 @@ const router = createBrowserRouter([
 			{
 				path: "editPost/:postId",
 				element: <EditPostForm />,
+			},
+			{
+				path: "users",
+				element: <UsersList />,
+			},
+			{
+				path: "users/:userId",
+				element: <UserPage />,
 			},
 		],
 	},

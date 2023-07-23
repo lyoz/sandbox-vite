@@ -6,6 +6,7 @@ export const Navbar = () => (
 			<h1>Redux Essentials Example</h1>
 			<div style={{ display: "flex", columnGap: 8 }}>
 				<Link to="/">Posts</Link>
+				<Link to="/users">Users</Link>
 			</div>
 		</section>
 	</nav>
