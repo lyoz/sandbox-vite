@@ -1,5 +1,6 @@
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Navbar } from "./app/Navbar";
+import { NotificationsList } from "./features/notifications/NotificationsList";
 import { AddPostForm } from "./features/posts/AddPostForm";
 import { EditPostForm } from "./features/posts/EditPostForm";
 import { PostsList } from "./features/posts/PostsList";
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
 			{
 				path: "users/:userId",
 				element: <UserPage />,
+			},
+			{
+				path: "notifications",
+				element: <NotificationsList />,
 			},
 		],
 	},
