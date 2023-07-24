@@ -1,7 +1,8 @@
 import { formatDistanceToNow, parseISO } from "date-fns";
-import { useAppSelector } from "../../app/hooks";
+import { CSSProperties, useLayoutEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { User } from "../users/usersSlice";
-import { Notification } from "./notificationsSlice";
+import { Notification, allNotificationsRead } from "./notificationsSlice";
 
 const NotificationExcerpt = ({
 	notification,
@@ -13,8 +14,12 @@ const NotificationExcerpt = ({
 	const date = parseISO(notification.createdAt);
 	const timeAgo = formatDistanceToNow(date);
 
+	const style = {
+		backgroundColor: notification.isNew ? "lavender " : undefined,
+	} satisfies CSSProperties;
+
 	return (
-		<div>
+		<div style={style}>
 			<div>
 				<b>{user.name}</b> {notification.message}
 			</div>
@@ -26,8 +31,13 @@ const NotificationExcerpt = ({
 };
 
 export const NotificationsList = () => {
+	const dispatch = useAppDispatch();
 	const notifications = useAppSelector((state) => state.notifications);
 	const users = useAppSelector((state) => state.users);
+
+	useLayoutEffect(() => {
+		dispatch(allNotificationsRead());
+	});
 
 	return (
 		<section>

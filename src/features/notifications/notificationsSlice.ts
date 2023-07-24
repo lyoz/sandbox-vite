@@ -7,6 +7,8 @@ export type Notification = {
 	message: string;
 	userId: string;
 	createdAt: string;
+	isNew?: boolean;
+	hasBeenRead?: boolean;
 };
 
 type NotificationsState = Notification[];
@@ -29,14 +31,26 @@ export const fetchNotifications = createAsyncThunk<
 const notificationsSlice = createSlice({
 	name: "notifications",
 	initialState,
-	reducers: {},
+	reducers: {
+		allNotificationsRead: (state) => {
+			state.forEach((notification) => {
+				notification.hasBeenRead = true;
+			});
+		},
+	},
 	extraReducers: (builder) => {
 		builder.addCase(fetchNotifications.fulfilled, (state, action) => {
-			return [...state, ...action.payload].sort((a, b) =>
-				b.createdAt.localeCompare(a.createdAt),
-			);
+			for (const notification of state) {
+				notification.isNew = !notification.hasBeenRead;
+			}
+			for (const notification of action.payload) {
+				state.push({ ...notification, isNew: true });
+			}
+			state.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 		});
 	},
 });
+
+export const { allNotificationsRead } = notificationsSlice.actions;
 
 export const notificationsReducer = notificationsSlice.reducer;
