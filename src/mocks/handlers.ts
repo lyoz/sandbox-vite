@@ -85,7 +85,7 @@ export const handlers = [
 	rest.post("/fakeApi/posts", async (req, res, ctx) => {
 		const json = await req.json();
 		const user = db.user.findFirst({ where: { id: { equals: json.userId } } });
-		if (user == null) return res(ctx.status(400));
+		if (user == null) return res(ctx.delay(DELAY_MS), ctx.status(400));
 		const post = db.post.create({
 			title: json.title,
 			content: json.content,
