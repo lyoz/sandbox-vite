@@ -2,7 +2,7 @@ import { ChangeEvent, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { assertIsDefined } from "../../common/assertIsDefined";
-import { Post, postUpdated } from "./postsSlice";
+import { Post, postUpdated, selectPostById } from "./postsSlice";
 
 const EditPostFormInner = ({ post }: { post: Post }) => {
 	const dispatch = useAppDispatch();
@@ -46,11 +46,9 @@ const EditPostFormInner = ({ post }: { post: Post }) => {
 };
 
 export const EditPostForm = () => {
-	const posts = useAppSelector((state) => state.posts.posts);
 	const { postId } = useParams();
 	assertIsDefined(postId);
-
-	const post = posts.find((post) => post.id === postId);
+	const post = useAppSelector((state) => selectPostById(state, postId));
 
 	if (post == null) {
 		return (

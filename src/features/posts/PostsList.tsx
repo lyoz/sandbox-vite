@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { PostAuthor } from "./PostAuthor";
 import { ReactionButtons } from "./ReactionButtons";
 import { TimeAgo } from "./TimeAgo";
-import { Post, fetchPosts } from "./postsSlice";
+import { Post, fetchPosts, selectAllPosts } from "./postsSlice";
 
 const PostExcerpt = ({ post }: { post: Post }) => (
 	<article>
@@ -21,7 +21,7 @@ const PostExcerpt = ({ post }: { post: Post }) => (
 
 export const PostsList = () => {
 	const dispatch = useAppDispatch();
-	const posts = useAppSelector((state) => state.posts.posts);
+	const posts = useAppSelector(selectAllPosts);
 	const postStatus = useAppSelector((state) => state.posts.status);
 	const error = useAppSelector((state) => state.posts.error);
 

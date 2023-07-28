@@ -4,13 +4,12 @@ import { assertIsDefined } from "../../common/assertIsDefined";
 import { PostAuthor } from "./PostAuthor";
 import { ReactionButtons } from "./ReactionButtons";
 import { TimeAgo } from "./TimeAgo";
+import { selectPostById } from "./postsSlice";
 
 export const SinglePostPage = () => {
-	const posts = useAppSelector((state) => state.posts.posts);
 	const { postId } = useParams();
 	assertIsDefined(postId);
-
-	const post = posts.find((post) => post.id === postId);
+	const post = useAppSelector((state) => selectPostById(state, postId));
 
 	if (post == null) {
 		return (

@@ -1,6 +1,8 @@
 import {
+	EntityState,
 	PayloadAction,
 	createAsyncThunk,
+	createEntityAdapter,
 	createSelector,
 	createSlice,
 } from "@reduxjs/toolkit";
@@ -26,17 +28,19 @@ export type Post = {
 	createdAt: string;
 };
 
-type PostsState = {
-	posts: Post[];
+const postsAdapter = createEntityAdapter<Post>({
+	sortComparer: (a, b) => b.createdAt.localeCompare(a.createdAt),
+});
+
+type PostsState = EntityState<Post> & {
 	status: "idle" | "loading" | "succeeded" | "failed";
 	error: string | null;
 };
 
-const initialState: PostsState = {
-	posts: [],
+const initialState: PostsState = postsAdapter.getInitialState({
 	status: "idle",
 	error: null,
-};
+});
 
 export const fetchPosts = createAsyncThunk<Post[], void, { state: RootState }>(
 	"posts/fetchPosts",
@@ -72,7 +76,7 @@ const postsSlice = createSlice({
 			>,
 		) => {
 			const { id, title, content } = action.payload;
-			const existingPost = state.posts.find((post) => post.id === id);
+			const existingPost = state.entities[id];
 			if (existingPost != null) {
 				existingPost.title = title;
 				existingPost.content = content;
@@ -83,7 +87,7 @@ const postsSlice = createSlice({
 			action: PayloadAction<{ postId: string; reactionKey: ReactionKey }>,
 		) => {
 			const { postId, reactionKey } = action.payload;
-			const existingPost = state.posts.find((post) => post.id === postId);
+			const existingPost = state.entities[postId];
 			if (existingPost != null) {
 				existingPost.reactionCounts[reactionKey]++;
 			}
@@ -96,15 +100,13 @@ const postsSlice = createSlice({
 			})
 			.addCase(fetchPosts.fulfilled, (state, action) => {
 				state.status = "succeeded";
-				state.posts = [...state.posts, ...action.payload];
+				postsAdapter.upsertMany(state, action.payload);
 			})
 			.addCase(fetchPosts.rejected, (state, action) => {
 				state.status = "failed";
 				state.error = action.error.message ?? "Unexpected error";
 			})
-			.addCase(addNewPost.fulfilled, (state, action) => {
-				state.posts.push(action.payload);
-			});
+			.addCase(addNewPost.fulfilled, postsAdapter.addOne);
 	},
 });
 
@@ -112,10 +114,10 @@ export const { postUpdated, reactionAdded } = postsSlice.actions;
 
 export const postsReducer = postsSlice.reducer;
 
+export const { selectAll: selectAllPosts, selectById: selectPostById } =
+	postsAdapter.getSelectors((state: RootState) => state.posts);
+
 export const selectPostsByUserId = createSelector(
-	[
-		(state: RootState) => state.posts.posts,
-		(_: RootState, userId: string) => userId,
-	],
+	[selectAllPosts, (_: RootState, userId: string) => userId],
 	(posts, userId) => posts.filter((post) => post.userId === userId),
 );
