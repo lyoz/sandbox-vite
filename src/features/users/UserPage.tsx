@@ -2,7 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { assertIsDefined } from "../../common/assertIsDefined";
 import { selectPostsByUserId } from "../posts/postsSlice";
-import { User } from "./usersSlice";
+import { User, selectUserById } from "./usersSlice";
 
 const UserPageInner = ({ user }: { user: User }) => {
 	const postsForUser = useAppSelector((state) =>
@@ -24,11 +24,9 @@ const UserPageInner = ({ user }: { user: User }) => {
 };
 
 export const UserPage = () => {
-	const users = useAppSelector((state) => state.users);
 	const { userId } = useParams();
 	assertIsDefined(userId);
-
-	const user = users.find((user) => user.id === userId);
+	const user = useAppSelector((state) => selectUserById(state, userId));
 
 	if (user == null) {
 		return (

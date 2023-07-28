@@ -1,10 +1,11 @@
 import { ChangeEvent, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { selectAllUsers } from "../users/usersSlice";
 import { addNewPost } from "./postsSlice";
 
 export const AddPostForm = () => {
 	const dispatch = useAppDispatch();
-	const users = useAppSelector((state) => state.users);
+	const users = useAppSelector(selectAllUsers);
 	const [title, setTitle] = useState("");
 	const [content, setContent] = useState("");
 	const [userId, setUserId] = useState("");

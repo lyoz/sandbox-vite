@@ -1,4 +1,10 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import {
+	EntityState,
+	createAsyncThunk,
+	createEntityAdapter,
+	createSlice,
+} from "@reduxjs/toolkit";
+import { RootState } from "../../app/store";
 import { client } from "../../common/client";
 
 export type User = {
@@ -6,9 +12,11 @@ export type User = {
 	name: string;
 };
 
-type UsersState = User[];
+const usersAdapter = createEntityAdapter<User>();
 
-const initialState: UsersState = [];
+type UsersState = EntityState<User>;
+
+const initialState: UsersState = usersAdapter.getInitialState();
 
 export const fetchUsers = createAsyncThunk<User[]>(
 	"users/fetchUsers",
@@ -23,10 +31,11 @@ const usersSlice = createSlice({
 	initialState,
 	reducers: {},
 	extraReducers: (builder) => {
-		builder.addCase(fetchUsers.fulfilled, (_, action) => {
-			return action.payload;
-		});
+		builder.addCase(fetchUsers.fulfilled, usersAdapter.setAll);
 	},
 });
 
 export const usersReducer = usersSlice.reducer;
+
+export const { selectAll: selectAllUsers, selectById: selectUserById } =
+	usersAdapter.getSelectors((state: RootState) => state.users);

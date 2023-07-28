@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
+import { selectAllUsers } from "./usersSlice";
 
 export const UsersList = () => {
-	const users = useAppSelector((state) => state.users);
+	const users = useAppSelector(selectAllUsers);
 
 	return (
 		<section>
