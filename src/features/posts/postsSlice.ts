@@ -1,4 +1,9 @@
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import {
+	PayloadAction,
+	createAsyncThunk,
+	createSelector,
+	createSlice,
+} from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import { client } from "../../common/client";
 
@@ -106,3 +111,11 @@ const postsSlice = createSlice({
 export const { postUpdated, reactionAdded } = postsSlice.actions;
 
 export const postsReducer = postsSlice.reducer;
+
+export const selectPostsByUserId = createSelector(
+	[
+		(state: RootState) => state.posts.posts,
+		(_: RootState, userId: string) => userId,
+	],
+	(posts, userId) => posts.filter((post) => post.userId === userId),
+);

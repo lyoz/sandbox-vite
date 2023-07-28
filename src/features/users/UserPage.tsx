@@ -1,11 +1,13 @@
 import { Link, useParams } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { assertIsDefined } from "../../common/assertIsDefined";
+import { selectPostsByUserId } from "../posts/postsSlice";
 import { User } from "./usersSlice";
 
 const UserPageInner = ({ user }: { user: User }) => {
-	const posts = useAppSelector((state) => state.posts.posts);
-	const postsForUser = posts.filter((post) => post.userId === user.id);
+	const postsForUser = useAppSelector((state) =>
+		selectPostsByUserId(state, user.id),
+	);
 
 	return (
 		<section>
