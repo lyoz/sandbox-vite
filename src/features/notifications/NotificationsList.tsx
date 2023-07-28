@@ -2,7 +2,11 @@ import { formatDistanceToNow, parseISO } from "date-fns";
 import { CSSProperties, useLayoutEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { User, selectAllUsers } from "../users/usersSlice";
-import { Notification, allNotificationsRead } from "./notificationsSlice";
+import {
+	Notification,
+	allNotificationsRead,
+	selectAllNotifications,
+} from "./notificationsSlice";
 
 const NotificationExcerpt = ({
 	notification,
@@ -32,7 +36,7 @@ const NotificationExcerpt = ({
 
 export const NotificationsList = () => {
 	const dispatch = useAppDispatch();
-	const notifications = useAppSelector((state) => state.notifications);
+	const notifications = useAppSelector(selectAllNotifications);
 	const users = useAppSelector(selectAllUsers);
 
 	useLayoutEffect(() => {

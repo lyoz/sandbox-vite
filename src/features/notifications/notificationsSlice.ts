@@ -1,4 +1,9 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import {
+	EntityState,
+	createAsyncThunk,
+	createEntityAdapter,
+	createSlice,
+} from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import { client } from "../../common/client";
 
@@ -11,16 +16,20 @@ export type Notification = {
 	hasBeenRead?: boolean;
 };
 
-type NotificationsState = Notification[];
+const notificationsAdapter = createEntityAdapter<Notification>({
+	sortComparer: (a, b) => b.createdAt.localeCompare(a.createdAt),
+});
 
-const initialState: NotificationsState = [];
+type NotificationsState = EntityState<Notification>;
+
+const initialState: NotificationsState = notificationsAdapter.getInitialState();
 
 export const fetchNotifications = createAsyncThunk<
 	Notification[],
 	void,
 	{ state: RootState }
 >("notifications/fetchNotifications", async (_, { getState }) => {
-	const [latestNotification] = getState().notifications;
+	const [latestNotification] = selectAllNotifications(getState());
 	const latestTimestamp = latestNotification?.createdAt ?? "";
 	const response = await client.get(
 		`/fakeApi/notifications?since=${latestTimestamp}`,
@@ -33,20 +42,25 @@ const notificationsSlice = createSlice({
 	initialState,
 	reducers: {
 		allNotificationsRead: (state) => {
-			state.forEach((notification) => {
+			for (const notification of Object.values(state.entities)) {
+				if (notification == null) continue; // NOTE: unnecessary in RTK 2.0
 				notification.hasBeenRead = true;
-			});
+			}
 		},
 	},
 	extraReducers: (builder) => {
 		builder.addCase(fetchNotifications.fulfilled, (state, action) => {
-			for (const notification of state) {
+			for (const notification of Object.values(state.entities)) {
+				if (notification == null) continue; // NOTE: unnecessary in RTK 2.0
 				notification.isNew = !notification.hasBeenRead;
 			}
-			for (const notification of action.payload) {
-				state.push({ ...notification, isNew: true });
-			}
-			state.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+			notificationsAdapter.addMany(
+				state,
+				action.payload.map((notification) => ({
+					...notification,
+					isNew: true,
+				})),
+			);
 		});
 	},
 });
@@ -54,3 +68,6 @@ const notificationsSlice = createSlice({
 export const { allNotificationsRead } = notificationsSlice.actions;
 
 export const notificationsReducer = notificationsSlice.reducer;
+
+export const { selectAll: selectAllNotifications } =
+	notificationsAdapter.getSelectors((state: RootState) => state.notifications);

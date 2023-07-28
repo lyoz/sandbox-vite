@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
-import { fetchNotifications } from "../features/notifications/notificationsSlice";
+import {
+	fetchNotifications,
+	selectAllNotifications,
+} from "../features/notifications/notificationsSlice";
 import { useAppDispatch, useAppSelector } from "./hooks";
 
 export const Navbar = () => {
 	const dispatch = useAppDispatch();
-	const notifications = useAppSelector((state) => state.notifications);
+	const notifications = useAppSelector(selectAllNotifications);
 
 	const fetchNewNotifications = () => {
 		dispatch(fetchNotifications());
