@@ -1,16 +1,14 @@
-import { ReactNode, useEffect } from "react";
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
+import { ReactNode, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { useGetPostsQuery } from "../api/apiSlice";
 import { PostAuthor } from "./PostAuthor";
 import { ReactionButtons } from "./ReactionButtons";
 import { TimeAgo } from "./TimeAgo";
-import { fetchPosts, selectPostById, selectPostIds } from "./postsSlice";
+import { Post } from "./postsSlice";
 
-const PostExcerpt = ({ postId }: { postId: string }) => {
-	const post = useAppSelector((state) => selectPostById(state, postId));
-
-	if (post == null) return null;
-
+const PostExcerpt = ({ post }: { post: Post }) => {
 	return (
 		<article>
 			<h3>{post.title}</h3>
@@ -25,27 +23,36 @@ const PostExcerpt = ({ postId }: { postId: string }) => {
 	);
 };
 
-export const PostsList = () => {
-	const dispatch = useAppDispatch();
-	const orderedPostIds = useAppSelector(selectPostIds) as string[]; // TODO: strongly type
-	const postStatus = useAppSelector((state) => state.posts.status);
-	const error = useAppSelector((state) => state.posts.error);
+const getErrorMessage = (error: FetchBaseQueryError | SerializedError) => {
+	if ("status" in error) {
+		return "error" in error ? error.error : JSON.stringify(error.data);
+	} else {
+		return error.message ?? "Unexpected error";
+	}
+};
 
-	useEffect(() => {
-		if (postStatus === "idle") {
-			dispatch(fetchPosts());
-		}
-	}, [dispatch, postStatus]);
+export const PostsList = () => {
+	const {
+		data: posts = [],
+		error,
+		isLoading,
+		isSuccess,
+		isError,
+	} = useGetPostsQuery();
+
+	const orderedPosts = useMemo(() => {
+		return [...posts].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+	}, [posts]);
 
 	let content: ReactNode = null;
-	if (postStatus === "loading") {
+	if (isLoading) {
 		content = <div>Loading...</div>;
-	} else if (postStatus === "succeeded") {
-		content = orderedPostIds.map((postId) => (
-			<PostExcerpt key={postId} postId={postId} />
+	} else if (isSuccess) {
+		content = orderedPosts.map((post) => (
+			<PostExcerpt key={post.id} post={post} />
 		));
-	} else if (postStatus === "failed") {
-		content = <div>{error}</div>;
+	} else if (isError) {
+		content = <div>{getErrorMessage(error)}</div>;
 	}
 
 	return (
