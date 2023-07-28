@@ -114,8 +114,11 @@ export const { postUpdated, reactionAdded } = postsSlice.actions;
 
 export const postsReducer = postsSlice.reducer;
 
-export const { selectAll: selectAllPosts, selectById: selectPostById } =
-	postsAdapter.getSelectors((state: RootState) => state.posts);
+export const {
+	selectIds: selectPostIds,
+	selectAll: selectAllPosts,
+	selectById: selectPostById,
+} = postsAdapter.getSelectors((state: RootState) => state.posts);
 
 export const selectPostsByUserId = createSelector(
 	[selectAllPosts, (_: RootState, userId: string) => userId],
