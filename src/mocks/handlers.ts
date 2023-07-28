@@ -95,6 +95,15 @@ export const handlers = [
 		});
 		return res(ctx.delay(DELAY_MS), ctx.json(serializePost(post)));
 	}),
+	rest.get<never, { postId: string }>(
+		"/fakeApi/posts/:postId",
+		(req, res, ctx) => {
+			const { postId } = req.params;
+			const post = db.post.findFirst({ where: { id: { equals: postId } } });
+			if (post == null) return res(ctx.delay(DELAY_MS), ctx.status(400));
+			return res(ctx.delay(DELAY_MS), ctx.json(serializePost(post)));
+		},
+	),
 	rest.get("/fakeApi/notifications", (_, res, ctx) => {
 		const notificationTemplates = [
 			"poked you",
