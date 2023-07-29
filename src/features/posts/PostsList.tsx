@@ -36,8 +36,10 @@ export const PostsList = () => {
 		data: posts = [],
 		error,
 		isLoading,
+		isFetching,
 		isSuccess,
 		isError,
+		refetch,
 	} = useGetPostsQuery();
 
 	const orderedPosts = useMemo(() => {
@@ -48,9 +50,13 @@ export const PostsList = () => {
 	if (isLoading) {
 		content = <div>Loading...</div>;
 	} else if (isSuccess) {
-		content = orderedPosts.map((post) => (
-			<PostExcerpt key={post.id} post={post} />
-		));
+		content = (
+			<div style={isFetching ? { opacity: 0.5 } : undefined}>
+				{orderedPosts.map((post) => (
+					<PostExcerpt key={post.id} post={post} />
+				))}
+			</div>
+		);
 	} else if (isError) {
 		content = <div>{getErrorMessage(error)}</div>;
 	}
@@ -58,6 +64,7 @@ export const PostsList = () => {
 	return (
 		<section>
 			<h2>Posts</h2>
+			<button onClick={refetch}>Refetch Posts</button>
 			{content}
 		</section>
 	);
