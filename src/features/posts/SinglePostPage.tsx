@@ -1,26 +1,21 @@
+import { ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useAppSelector } from "../../app/hooks";
 import { assertIsDefined } from "../../common/assertIsDefined";
+import { useGetPostQuery } from "../api/apiSlice";
 import { PostAuthor } from "./PostAuthor";
 import { ReactionButtons } from "./ReactionButtons";
 import { TimeAgo } from "./TimeAgo";
-import { selectPostById } from "./postsSlice";
 
 export const SinglePostPage = () => {
 	const { postId } = useParams();
 	assertIsDefined(postId);
-	const post = useAppSelector((state) => selectPostById(state, postId));
+	const { data: post, isFetching, isSuccess } = useGetPostQuery(postId);
 
-	if (post == null) {
-		return (
-			<section>
-				<h2>Post not found!</h2>
-			</section>
-		);
-	}
-
-	return (
-		<section>
+	let content: ReactNode = null;
+	if (isFetching) {
+		content = <div>Loading...</div>;
+	} else if (isSuccess) {
+		content = (
 			<article>
 				<h2>{post.title}</h2>
 				<div style={{ display: "flex", columnGap: 8 }}>
@@ -31,6 +26,8 @@ export const SinglePostPage = () => {
 				<ReactionButtons post={post} />
 				<Link to={`/editPost/${post.id}`}>Edit Post</Link>
 			</article>
-		</section>
-	);
+		);
+	}
+
+	return <section>{content}</section>;
 };
