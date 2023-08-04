@@ -104,6 +104,19 @@ export const handlers = [
 			return res(ctx.delay(DELAY_MS), ctx.json(serializePost(post)));
 		},
 	),
+	rest.patch<never, { postId: string }>(
+		"/fakeApi/posts/:postId",
+		async (req, res, ctx) => {
+			const { postId } = req.params;
+			const { title, content } = await req.json();
+			const updatedPost = db.post.update({
+				where: { id: { equals: postId } },
+				data: { title, content },
+			});
+			if (updatedPost == null) return res(ctx.delay(DELAY_MS), ctx.status(400));
+			return res(ctx.delay(DELAY_MS), ctx.json(serializePost(updatedPost)));
+		},
+	),
 	rest.get("/fakeApi/notifications", (_, res, ctx) => {
 		const notificationTemplates = [
 			"poked you",
