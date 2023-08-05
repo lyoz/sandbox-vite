@@ -1,11 +1,11 @@
 import { ChangeEvent, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { assertIsDefined } from "../../common/assertIsDefined";
-import { Post, postUpdated, selectPostById } from "./postsSlice";
+import { useEditPostMutation, useGetPostQuery } from "../api/apiSlice";
+import { Post } from "./postsSlice";
 
 const EditPostFormInner = ({ post }: { post: Post }) => {
-	const dispatch = useAppDispatch();
+	const [updatePost, { isLoading }] = useEditPostMutation();
 	const [title, setTitle] = useState(post.title);
 	const [content, setContent] = useState(post.content);
 	const navigate = useNavigate();
@@ -16,11 +16,11 @@ const EditPostFormInner = ({ post }: { post: Post }) => {
 	const handleContentChange = (e: ChangeEvent<HTMLTextAreaElement>) =>
 		setContent(e.currentTarget.value);
 
-	const canSave = title !== "" && content !== "";
+	const canSave = title !== "" && content !== "" && !isLoading;
 
-	const handleSave = () => {
+	const handleSave = async () => {
 		if (canSave) {
-			dispatch(postUpdated({ id: post.id, title, content }));
+			await updatePost({ id: post.id, title, content });
 			navigate(`/posts/${post.id}`);
 		}
 	};
@@ -31,11 +31,19 @@ const EditPostFormInner = ({ post }: { post: Post }) => {
 			<form>
 				<label>
 					Post Title:
-					<input value={title} onChange={handleTitleChange} />
+					<input
+						value={title}
+						onChange={handleTitleChange}
+						disabled={isLoading}
+					/>
 				</label>
 				<label>
 					Content:
-					<textarea value={content} onChange={handleContentChange} />
+					<textarea
+						value={content}
+						onChange={handleContentChange}
+						disabled={isLoading}
+					/>
 				</label>
 				<button type="button" onClick={handleSave} disabled={!canSave}>
 					Save Post
@@ -48,7 +56,7 @@ const EditPostFormInner = ({ post }: { post: Post }) => {
 export const EditPostForm = () => {
 	const { postId } = useParams();
 	assertIsDefined(postId);
-	const post = useAppSelector((state) => selectPostById(state, postId));
+	const { data: post } = useGetPostQuery(postId);
 
 	if (post == null) {
 		return (
