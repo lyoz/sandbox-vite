@@ -83,7 +83,11 @@ export const handlers = [
 		);
 	}),
 	rest.post("/fakeApi/posts", async (req, res, ctx) => {
-		const json = await req.json();
+		const json = await req.json<{
+			title: string;
+			content: string;
+			userId: string;
+		}>();
 		const user = db.user.findFirst({ where: { id: { equals: json.userId } } });
 		if (user == null) return res(ctx.delay(DELAY_MS), ctx.status(400));
 		const post = db.post.create({
@@ -108,10 +112,10 @@ export const handlers = [
 		"/fakeApi/posts/:postId",
 		async (req, res, ctx) => {
 			const { postId } = req.params;
-			const { title, content } = await req.json();
+			const json = await req.json<{ title: string; content: string }>();
 			const updatedPost = db.post.update({
 				where: { id: { equals: postId } },
-				data: { title, content },
+				data: { title: json.title, content: json.content },
 			});
 			if (updatedPost == null) return res(ctx.delay(DELAY_MS), ctx.status(400));
 			return res(ctx.delay(DELAY_MS), ctx.json(serializePost(updatedPost)));
@@ -121,7 +125,7 @@ export const handlers = [
 		"/fakeApi/posts/:postId/reactions",
 		async (req, res, ctx) => {
 			const { postId } = req.params;
-			const { reactionKey } = await req.json<{
+			const json = await req.json<{
 				reactionKey: "thumbsUp" | "hooray" | "heart" | "rocket" | "eyes";
 			}>();
 			const updatedPost = db.post.update({
@@ -131,7 +135,7 @@ export const handlers = [
 						return (
 							db.reactionCounts.update({
 								where: { id: { equals: prevValue.id } },
-								data: { [reactionKey]: prevValue[reactionKey] + 1 },
+								data: { [json.reactionKey]: prevValue[json.reactionKey] + 1 },
 							}) ?? prevValue
 						);
 					},
