@@ -1,41 +1,35 @@
-import {
-	EntityState,
-	createAsyncThunk,
-	createEntityAdapter,
-	createSlice,
-} from "@reduxjs/toolkit";
+import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import { client } from "../../common/client";
+import { apiSlice } from "../api/apiSlice";
 
 export type User = {
 	id: string;
 	name: string;
 };
 
+/* Temporarily ignore adapter
 const usersAdapter = createEntityAdapter<User>();
 
 type UsersState = EntityState<User>;
 
 const initialState: UsersState = usersAdapter.getInitialState();
+*/
 
-export const fetchUsers = createAsyncThunk<User[]>(
-	"users/fetchUsers",
-	async () => {
-		const response = await client.get("/fakeApi/users");
-		return response.data;
-	},
+export const selectUsersResult = apiSlice.endpoints.getUsers.select();
+
+const emptyUsers: User[] = [];
+
+export const selectAllUsers = createSelector(
+	selectUsersResult,
+	(usersResult) => usersResult.data ?? emptyUsers,
 );
 
-const usersSlice = createSlice({
-	name: "users",
-	initialState,
-	reducers: {},
-	extraReducers: (builder) => {
-		builder.addCase(fetchUsers.fulfilled, usersAdapter.setAll);
-	},
-});
+export const selectUserById = createSelector(
+	[selectAllUsers, (_: RootState, userId: string) => userId],
+	(users, userId) => users.find((user) => user.id === userId),
+);
 
-export const usersReducer = usersSlice.reducer;
-
+/* Temporarily ignore selectors
 export const { selectAll: selectAllUsers, selectById: selectUserById } =
 	usersAdapter.getSelectors((state: RootState) => state.users);
+*/
