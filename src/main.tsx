@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { App } from "./App";
 import { store } from "./app/store";
-import { fetchUsers } from "./features/users/usersSlice";
+import { apiSlice } from "./features/api/apiSlice";
 
 const container = document.getElementById("root");
 if (!container) throw new Error("Failed to find the root element");
@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === "development") {
 	worker.start({ onUnhandledRequest: "bypass" });
 }
 
-store.dispatch(fetchUsers());
+store.dispatch(apiSlice.endpoints.getUsers.initiate());
 
 const root = createRoot(container);
 root.render(
