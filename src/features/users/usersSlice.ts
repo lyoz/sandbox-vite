@@ -15,7 +15,15 @@ type UsersState = EntityState<User>;
 const initialState: UsersState = usersAdapter.getInitialState();
 */
 
-export const selectUsersResult = apiSlice.endpoints.getUsers.select();
+export const extendedApiSlice = apiSlice.injectEndpoints({
+	endpoints: (builder) => ({
+		getUsers: builder.query<User[], void>({
+			query: () => "users",
+		}),
+	}),
+});
+
+export const selectUsersResult = extendedApiSlice.endpoints.getUsers.select();
 
 const emptyUsers: User[] = [];
 

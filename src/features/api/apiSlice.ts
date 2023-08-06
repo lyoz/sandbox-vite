@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Post } from "../posts/postsSlice";
-import { User } from "../users/usersSlice";
 
 export const apiSlice = createApi({
 	baseQuery: fetchBaseQuery({ baseUrl: "/fakeApi/" }),
@@ -38,9 +37,6 @@ export const apiSlice = createApi({
 				body: post,
 			}),
 			invalidatesTags: (_result, _error, arg) => [{ type: "Post", id: arg.id }],
-		}),
-		getUsers: builder.query<User[], void>({
-			query: () => "users",
 		}),
 	}),
 });
