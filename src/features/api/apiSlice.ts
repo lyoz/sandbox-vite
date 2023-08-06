@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { Post } from "../posts/postsSlice";
+import { Post, ReactionKey } from "../posts/postsSlice";
 
 export const apiSlice = createApi({
 	baseQuery: fetchBaseQuery({ baseUrl: "/fakeApi/" }),
@@ -38,6 +38,19 @@ export const apiSlice = createApi({
 			}),
 			invalidatesTags: (_result, _error, arg) => [{ type: "Post", id: arg.id }],
 		}),
+		addReaction: builder.mutation<
+			Post,
+			{ postId: string; reactionKey: ReactionKey }
+		>({
+			query: ({ postId, reactionKey }) => ({
+				url: `posts/${postId}/reactions`,
+				method: "POST",
+				body: { reactionKey },
+			}),
+			invalidatesTags: (_result, _error, arg) => [
+				{ type: "Post", id: arg.postId },
+			],
+		}),
 	}),
 });
 
@@ -46,4 +59,5 @@ export const {
 	useGetPostQuery,
 	useAddNewPostMutation,
 	useEditPostMutation,
+	useAddReactionMutation,
 } = apiSlice;

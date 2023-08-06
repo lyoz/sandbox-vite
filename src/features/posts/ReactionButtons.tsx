@@ -1,5 +1,5 @@
-import { useAppDispatch } from "../../app/hooks";
-import { Post, ReactionKey, reactionAdded, reactionKeys } from "./postsSlice";
+import { useAddReactionMutation } from "../api/apiSlice";
+import { Post, ReactionKey, reactionKeys } from "./postsSlice";
 
 const reactionEmojis = {
 	thumbsUp: "👍",
@@ -10,10 +10,10 @@ const reactionEmojis = {
 } as const satisfies Record<ReactionKey, string>;
 
 export const ReactionButtons = ({ post }: { post: Post }) => {
-	const dispatch = useAppDispatch();
+	const [addReaction] = useAddReactionMutation();
 
 	const handleReactionAdd = (reactionKey: ReactionKey) => {
-		dispatch(reactionAdded({ postId: post.id, reactionKey }));
+		addReaction({ postId: post.id, reactionKey });
 	};
 
 	return (
