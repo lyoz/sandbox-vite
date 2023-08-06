@@ -1,13 +1,31 @@
+import { createSelector } from "@reduxjs/toolkit";
+import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { assertIsDefined } from "../../common/assertIsDefined";
-import { selectPostsByUserId } from "../posts/postsSlice";
+import { useGetPostsQuery } from "../api/apiSlice";
+import { Post } from "../posts/postsSlice";
 import { User, selectUserById } from "./usersSlice";
 
 const UserPageInner = ({ user }: { user: User }) => {
-	const postsForUser = useAppSelector((state) =>
-		selectPostsByUserId(state, user.id),
-	);
+	const selectPostsByUserId = useMemo(() => {
+		const emptyArray: Post[] = [];
+		type QueryResult = { data?: Post[] };
+		return createSelector(
+			[
+				(result: QueryResult) => result.data,
+				(_: QueryResult, userId: string) => userId,
+			],
+			(data, userId) =>
+				data?.filter((post) => post.userId === userId) ?? emptyArray,
+		);
+	}, []);
+
+	const { postsForUser } = useGetPostsQuery(undefined, {
+		selectFromResult: (result) => ({
+			postsForUser: selectPostsByUserId(result, user.id),
+		}),
+	});
 
 	return (
 		<section>
