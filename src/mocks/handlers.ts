@@ -117,6 +117,30 @@ export const handlers = [
 			return res(ctx.delay(DELAY_MS), ctx.json(serializePost(updatedPost)));
 		},
 	),
+	rest.post<never, { postId: string }>(
+		"/fakeApi/posts/:postId/reactions",
+		async (req, res, ctx) => {
+			const { postId } = req.params;
+			const { reactionKey } = await req.json<{
+				reactionKey: "thumbsUp" | "hooray" | "heart" | "rocket" | "eyes";
+			}>();
+			const updatedPost = db.post.update({
+				where: { id: { equals: postId } },
+				data: {
+					reactionCounts: (prevValue) => {
+						return (
+							db.reactionCounts.update({
+								where: { id: { equals: prevValue.id } },
+								data: { [reactionKey]: prevValue[reactionKey] + 1 },
+							}) ?? prevValue
+						);
+					},
+				},
+			});
+			if (updatedPost == null) return res(ctx.delay(DELAY_MS), ctx.status(400));
+			return res(ctx.delay(DELAY_MS), ctx.json(serializePost(updatedPost)));
+		},
+	),
 	rest.get("/fakeApi/notifications", (_, res, ctx) => {
 		const notificationTemplates = [
 			"poked you",
