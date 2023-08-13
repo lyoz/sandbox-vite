@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
 import { assertIsDefined } from "../../common/assertIsDefined";
-import { useGetPostQuery } from "../api/apiSlice";
+import { useGetPostQuery } from "../posts/postsSlice";
 import { PostAuthor } from "./PostAuthor";
 import { ReactionButtons } from "./ReactionButtons";
 import { TimeAgo } from "./TimeAgo";

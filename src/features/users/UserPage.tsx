@@ -3,8 +3,7 @@ import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { assertIsDefined } from "../../common/assertIsDefined";
-import { useGetPostsQuery } from "../api/apiSlice";
-import { Post } from "../posts/postsSlice";
+import { Post, useGetPostsQuery } from "../posts/postsSlice";
 import { User, selectUserById } from "./usersSlice";
 
 const UserPageInner = ({ user }: { user: User }) => {

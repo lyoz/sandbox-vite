@@ -2,7 +2,7 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import { ReactNode, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useGetPostsQuery } from "../api/apiSlice";
+import { useGetPostsQuery } from "../posts/postsSlice";
 import { PostAuthor } from "./PostAuthor";
 import { ReactionButtons } from "./ReactionButtons";
 import { TimeAgo } from "./TimeAgo";

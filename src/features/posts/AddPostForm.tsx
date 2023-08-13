@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from "react";
 import { useAppSelector } from "../../app/hooks";
-import { useAddNewPostMutation } from "../api/apiSlice";
+import { useAddNewPostMutation } from "../posts/postsSlice";
 import { selectAllUsers } from "../users/usersSlice";
 
 export const AddPostForm = () => {

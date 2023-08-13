@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { assertIsDefined } from "../../common/assertIsDefined";
-import { useEditPostMutation, useGetPostQuery } from "../api/apiSlice";
+import { useEditPostMutation, useGetPostQuery } from "../posts/postsSlice";
 import { Post } from "./postsSlice";
 
 const EditPostFormInner = ({ post }: { post: Post }) => {

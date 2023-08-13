@@ -1,4 +1,4 @@
-import { useAddReactionMutation } from "../api/apiSlice";
+import { useAddReactionMutation } from "../posts/postsSlice";
 import { Post, ReactionKey, reactionKeys } from "./postsSlice";
 
 const reactionEmojis = {
