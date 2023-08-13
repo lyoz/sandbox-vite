@@ -2,14 +2,14 @@ import {
 	AnyAction,
 	EntityState,
 	ThunkAction,
-	createAsyncThunk,
+	createAction,
 	createEntityAdapter,
 	createSelector,
 	createSlice,
+	isAnyOf,
 } from "@reduxjs/toolkit";
 import { subMinutes } from "date-fns";
 import { RootState } from "../../app/store";
-import { client } from "../../common/client";
 import { forceGenerateNotifications } from "../../mocks/socketServer";
 import { apiSlice } from "../api/apiSlice";
 
@@ -18,8 +18,6 @@ export type Notification = {
 	message: string;
 	userId: string;
 	createdAt: string;
-	isNew?: boolean;
-	hasBeenRead?: boolean;
 };
 
 const isNotification = (x: unknown): x is Notification => {
@@ -28,10 +26,12 @@ const isNotification = (x: unknown): x is Notification => {
 	if (!("message" in x && typeof x.message === "string")) return false;
 	if (!("userId" in x && typeof x.userId === "string")) return false;
 	if (!("createdAt" in x && typeof x.createdAt === "string")) return false;
-	if (!(!("isNew" in x) || typeof x.isNew === "boolean")) return false;
-	if (!(!("hasBeenRead" in x) || typeof x.id === "boolean")) return false;
 	return true;
 };
+
+const notificationsReceived = createAction<Notification[]>(
+	"notifications/notificationsReceived",
+);
 
 export const extendedApiSlice = apiSlice.injectEndpoints({
 	endpoints: (builder) => ({
@@ -39,7 +39,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
 			query: () => "notifications",
 			onCacheEntryAdded: async (
 				_,
-				{ updateCachedData, cacheDataLoaded, cacheEntryRemoved },
+				{ dispatch, updateCachedData, cacheDataLoaded, cacheEntryRemoved },
 			) => {
 				const ws = new WebSocket("ws://localhost");
 				try {
@@ -61,6 +61,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
 									draft.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 								}
 							});
+							dispatch(notificationsReceived(payload));
 						}
 					});
 				} catch {
@@ -92,26 +93,22 @@ export const fetchNotificationsWebSocket =
 		forceGenerateNotifications(latestTimestamp);
 	};
 
-const notificationsAdapter = createEntityAdapter<Notification>({
-	sortComparer: (a, b) => b.createdAt.localeCompare(a.createdAt),
-});
+const matchNotificationsReceived = isAnyOf(
+	notificationsReceived,
+	extendedApiSlice.endpoints.getNotifications.matchFulfilled,
+);
 
-type NotificationsState = EntityState<Notification>;
+export type NotificationMeta = {
+	id: string;
+	isNew?: boolean;
+	hasBeenRead?: boolean;
+};
+
+const notificationsAdapter = createEntityAdapter<NotificationMeta>();
+
+type NotificationsState = EntityState<NotificationMeta>;
 
 const initialState: NotificationsState = notificationsAdapter.getInitialState();
-
-export const fetchNotifications = createAsyncThunk<
-	Notification[],
-	void,
-	{ state: RootState }
->("notifications/fetchNotifications", async (_, { getState }) => {
-	const [latestNotification] = selectAllNotifications(getState());
-	const latestTimestamp = latestNotification?.createdAt ?? "";
-	const response = await client.get(
-		`/fakeApi/notifications?since=${latestTimestamp}`,
-	);
-	return response.data;
-});
 
 const notificationsSlice = createSlice({
 	name: "notifications",
@@ -125,7 +122,7 @@ const notificationsSlice = createSlice({
 		},
 	},
 	extraReducers: (builder) => {
-		builder.addCase(fetchNotifications.fulfilled, (state, action) => {
+		builder.addMatcher(matchNotificationsReceived, (state, action) => {
 			for (const notification of Object.values(state.entities)) {
 				if (notification == null) continue; // NOTE: unnecessary in RTK 2.0
 				notification.isNew = !notification.hasBeenRead;
@@ -133,9 +130,9 @@ const notificationsSlice = createSlice({
 			notificationsAdapter.addMany(
 				state,
 				action.payload.map((notification) => ({
-					...notification,
+					id: notification.id,
 					isNew: true,
-				})),
+				})) satisfies NotificationMeta[],
 			);
 		});
 	},
@@ -145,5 +142,9 @@ export const { allNotificationsRead } = notificationsSlice.actions;
 
 export const notificationsReducer = notificationsSlice.reducer;
 
-export const { selectAll: selectAllNotifications } =
-	notificationsAdapter.getSelectors((state: RootState) => state.notifications);
+export const {
+	selectEntities: selectNotificationMetaEntities,
+	selectAll: selectAllNotificationMetas,
+} = notificationsAdapter.getSelectors(
+	(state: RootState) => state.notifications,
+);

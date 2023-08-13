@@ -1,23 +1,23 @@
 import { Link } from "react-router-dom";
 import {
-	fetchNotifications,
-	selectAllNotifications,
+	fetchNotificationsWebSocket,
+	selectAllNotificationMetas,
+	useGetNotificationsQuery,
 } from "../features/notifications/notificationsSlice";
 import { useAppDispatch, useAppSelector } from "./hooks";
 
 export const Navbar = () => {
 	const dispatch = useAppDispatch();
-	const notifications = useAppSelector(selectAllNotifications);
+	useGetNotificationsQuery();
+	const notificationMetas = useAppSelector(selectAllNotificationMetas);
 
 	const fetchNewNotifications = () => {
-		dispatch(fetchNotifications());
+		dispatch(fetchNotificationsWebSocket());
 	};
 
-	const unreadNotifications = notifications.filter((n) => !n.hasBeenRead);
+	const unreadCount = notificationMetas.filter((n) => !n.hasBeenRead).length;
 	const unreadNotificationsBadge =
-		unreadNotifications.length > 0 ? (
-			<span>({unreadNotifications.length})</span>
-		) : null;
+		unreadCount > 0 ? <span>({unreadCount})</span> : null;
 
 	return (
 		<nav>

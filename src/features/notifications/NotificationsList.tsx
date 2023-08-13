@@ -4,22 +4,26 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { User, selectAllUsers } from "../users/usersSlice";
 import {
 	Notification,
+	NotificationMeta,
 	allNotificationsRead,
-	selectAllNotifications,
+	selectNotificationMetaEntities,
+	useGetNotificationsQuery,
 } from "./notificationsSlice";
 
 const NotificationExcerpt = ({
 	notification,
+	notificationMeta,
 	user,
 }: {
 	notification: Notification;
+	notificationMeta: NotificationMeta;
 	user: Pick<User, "name">;
 }) => {
 	const date = parseISO(notification.createdAt);
 	const timeAgo = formatDistanceToNow(date);
 
 	const style = {
-		backgroundColor: notification.isNew ? "lavender " : undefined,
+		backgroundColor: notificationMeta.isNew ? "lavender " : undefined,
 	} satisfies CSSProperties;
 
 	return (
@@ -36,7 +40,10 @@ const NotificationExcerpt = ({
 
 export const NotificationsList = () => {
 	const dispatch = useAppDispatch();
-	const notifications = useAppSelector(selectAllNotifications);
+	const { data: notifications = [] } = useGetNotificationsQuery();
+	const notificationMetaEntities = useAppSelector(
+		selectNotificationMetaEntities,
+	);
 	const users = useAppSelector(selectAllUsers);
 
 	useLayoutEffect(() => {
@@ -50,10 +57,13 @@ export const NotificationsList = () => {
 				const user =
 					users.find((user) => user.id === notification.userId) ??
 					({ name: "Unknown User" } satisfies Pick<User, "name">);
+				const notificationMeta = notificationMetaEntities[notification.id];
+				if (notificationMeta == null) return null; // NOTE: unnecessary in RTK 2.0
 				return (
 					<NotificationExcerpt
 						key={notification.id}
 						notification={notification}
+						notificationMeta={notificationMeta}
 						user={user}
 					/>
 				);
