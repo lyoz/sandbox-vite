@@ -1,11 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "../features/api/apiSlice";
 import { notificationsReducer } from "../features/notifications/notificationsSlice";
-import { postsReducer } from "../features/posts/postsSlice";
 
 export const store = configureStore({
 	reducer: {
-		posts: postsReducer,
 		notifications: notificationsReducer,
 		[apiSlice.reducerPath]: apiSlice.reducer,
 	},
