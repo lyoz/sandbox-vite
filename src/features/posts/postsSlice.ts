@@ -67,20 +67,31 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
 				{ postId, reactionKey },
 				{ dispatch, queryFulfilled },
 			) => {
-				const patchResult = dispatch(
-					extendedApiSlice.util.updateQueryData(
-						"getPosts",
-						undefined,
-						(draft) => {
-							const post = draft.find((post) => post.id === postId);
-							if (post != null) post.reactionCounts[reactionKey]++;
-						},
+				const patchResults = [
+					dispatch(
+						extendedApiSlice.util.updateQueryData(
+							"getPosts",
+							undefined,
+							(draft) => {
+								const post = draft.find((post) => post.id === postId);
+								if (post != null) post.reactionCounts[reactionKey]++;
+							},
+						),
 					),
-				);
+					dispatch(
+						extendedApiSlice.util.updateQueryData(
+							"getPost",
+							postId,
+							(draft) => {
+								draft.reactionCounts[reactionKey]++;
+							},
+						),
+					),
+				];
 				try {
 					await queryFulfilled;
 				} catch {
-					patchResult.undo();
+					for (const patchResult of patchResults) patchResult.undo();
 				}
 			},
 		}),
