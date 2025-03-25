@@ -1,17 +1,25 @@
 {
 	"compilerOptions": {
 		// Projects
-		"composite": true,
 		"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+		// Language and Environment
+		"target": "ES2022",
+		"lib": ["ES2023"],
+		"moduleDetection": "force",
 		// Modules
 		"module": "ESNext",
 		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
 		// Emit
 		"noEmit": true,
 		// Interop Constraints
-		"allowSyntheticDefaultImports": true,
+		"isolatedModules": true,
 		// Type Checking
 		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedSideEffectImports": true,
 		// Completeness
 		"skipLibCheck": true
 	},
